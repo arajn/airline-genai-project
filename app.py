@@ -82,31 +82,31 @@ model = GenerativeModel(
 )
 
 st.set_page_config(
-    page_title="SQL Talk with BigQuery",
-    # page_icon="vertex-ai.png",
+    page_title="Airline Booking Agent",
+    page_icon="airline.jpeg",
     layout="wide",
 )
 
 col1, col2 = st.columns([8, 1])
 with col1:
-    st.title("SQL Talk with BigQuery")
-# with col2:
-#     st.image("vertex-ai.png")
+    st.title("Airline Agent")
+with col2:
+    st.image("airline.jpeg")
 
-st.subheader("Powered by Function Calling in Gemini")
+# st.subheader("Powered by Function Calling in Gemini")
 
-st.markdown(
-    "[Source Code](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/function-calling/sql-talk-app/)   •   [Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/function-calling)   •   [Codelab](https://codelabs.developers.google.com/codelabs/gemini-function-calling)   •   [Sample Notebook](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/function-calling/intro_function_calling.ipynb)"
-)
+# st.markdown(
+#     "[Source Code](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/function-calling/sql-talk-app/)   •   [Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/function-calling)   •   [Codelab](https://codelabs.developers.google.com/codelabs/gemini-function-calling)   •   [Sample Notebook](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/function-calling/intro_function_calling.ipynb)"
+# )
 
 with st.expander("Sample prompts", expanded=True):
     st.write(
         """
         - What kind of information is in this database?
         - What percentage of orders are returned?
-        - How is inventory distributed across our regional distribution centers?
-        - Do customers typically place more than one order?
-        - Which product categories have the highest profit margins?
+        - How is airline bookings distributed across destinations?
+        - which customer made the highest number of reservations and how much money did he spent on it?
+        - can you show me 5 destinations has the least number of bookings with number of bookings 
     """
     )
 
