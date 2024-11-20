@@ -5,6 +5,10 @@ gcloud services enable aiplatform.googleapis.com
 gcloud services enable bigquery.googleapis.com
 gcloud services enable bigquerydatatransfer.googleapis.com
 
+# Clean cache for pip
+echo "Cleaning pip cache..."
+pip cache purge
+
 # Copy public dataset
 bq mk --force=true --dataset airline_bookings
 bq mk \

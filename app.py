@@ -1,8 +1,12 @@
+
 import time
 
 from google.cloud import bigquery
 import streamlit as st
 from vertexai.generative_models import FunctionDeclaration, GenerativeModel, Part, Tool
+import numpy as np
+import pandas as pd
+import io
 
 BIGQUERY_DATASET_ID = "airline_bookings"
 
@@ -82,33 +86,55 @@ model = GenerativeModel(
 )
 
 st.set_page_config(
+<<<<<<< HEAD
     page_title="Airline Booking Agent",
     page_icon="airline.jpeg",
+=======
+    page_title="AI Powered Data Query Interface",
+    page_icon="vertex-ai.png",
+>>>>>>> ac23f87 (check-in)
     layout="wide",
 )
 
 col1, col2 = st.columns([8, 1])
 with col1:
+<<<<<<< HEAD
     st.title("Airline Agent")
 with col2:
     st.image("airline.jpeg")
+=======
+    st.title("AI Powered Data Querying")
+with col2:
+    st.image("vertex-ai.png")
+>>>>>>> ac23f87 (check-in)
 
 # st.subheader("Powered by Function Calling in Gemini")
 
+<<<<<<< HEAD
 # st.markdown(
 #     "[Source Code](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/function-calling/sql-talk-app/)   •   [Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/function-calling)   •   [Codelab](https://codelabs.developers.google.com/codelabs/gemini-function-calling)   •   [Sample Notebook](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/function-calling/intro_function_calling.ipynb)"
 # )
+=======
+>>>>>>> ac23f87 (check-in)
 
 with st.expander("Sample prompts", expanded=True):
     st.write(
         """
         - What kind of information is in this database?
+<<<<<<< HEAD
         - What percentage of orders are returned?
         - How is airline bookings distributed across destinations?
         - which customer made the highest number of reservations and how much money did he spent on it?
         - can you show me 5 destinations has the least number of bookings with number of bookings 
+=======
+        - How many bookings were made by customers in the 25-34 age group, grouped by state and airline?
+        - Show the average ticket price for international flights grouped by airline.
+        - How many customers booked more than 3 times in the last 3 months?
+        - Compare ticket prices for business and economy classes.
+>>>>>>> ac23f87 (check-in)
     """
     )
+
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -134,10 +160,63 @@ if prompt := st.chat_input("Ask me about information in the database..."):
         client = bigquery.Client()
 
         prompt += """
-            Please give a concise, high-level summary followed by detail in
-            plain language about where the information in your response is
-            coming from in the database. Only use information that you learn
-            from BigQuery, do not make up information.
+                            You are a highly skilled data analyst specializing in airline booking data. Your task is to accurately answer user queries about this data, stored in a BigQuery database. **Prioritize result dont just return SQL query**
+                            
+                            #### Dataset Details:
+                            **Dataset Name**: `airline_bookings`
+                            **Tables**:
+                            1. `customer_profiles`: CustomerID, AgeGroup, Gender, FrequentFlyer, State, City.
+                            2. `airline_bookings`: BookingID, CustomerID, Airline, Destination, BookingDate, FlightType, TicketPrice, Class, BookingChannel, AffinityIndex.
+
+
+                            **Here's an example of a user query:**
+
+                            > "What are the top 5 destinations for customers aged 25-34?"
+
+                            **Here's how you would respond:**
+
+                            Top 5 Destinations for Customers Aged 25-34
+                            | Destination | Total Bookings |
+                            |---|---|
+                            | London | 1234 |
+                            | Paris | 987 |
+                            | Tokyo | 876 |
+                            | New York | 765 |
+                            | Sydney | 654 |
+                            
+                            Now, here's the user's query:
+
+                            [User's query]
+
+
+                            Please provide:
+
+                            1. The query results in a clear format (e.g., tables, lists, or visualizations)
+                            2. A concise explanation of the results
+                            3. Any relevant insights or observations
+                            
+                            **Important Considerations:**
+
+                            1. Dataset: Always fully qualify table names with their dataset name in SQL queries. For example, use `airline_bookings.airline_bookings` instead of `airline_bookings`. Dont use any public dataset.
+                            2. Data Accuracy: Ensure the accuracy of your SQL queries and the correctness of the results. 
+                            3. Clarity and Conciseness: Present your response in a clear and concise manner, avoiding unnecessary details.
+                            4. User-Friendliness: Tailor your response to the user's level of technical expertise. e.g., tables, lists, or visualizations.
+                            
+                            
+                            **Additional Notes:**
+                            1. The following columns exist in **both tables**: `AgeGroup`, `Gender`, `FrequentFlyer`, `State`, and `City`. Always qualify these column names with the table name or alias in the query.
+                                   - Use `cp` for `customer_profiles` (e.g., `cp.State`, `cp.AgeGroup`).
+                                   - Use `abd` for `airline_bookings_data` (e.g., `abd.State`, `abd.AgeGroup`).
+                            2. When joining the tables, you can use `CustomerID` as the key for the join.
+                            3. Ensure the generated SQL queries are free of ambiguity and fully qualify columns, especially in SELECT, WHERE, GROUP BY, and ORDER BY clauses.
+                            4. For GROUP BY queries, explicitly use the fully qualified column name in the GROUP BY clause.
+                            5.The `FrequentFlyer` column is of type `BOOL`. Treat `'Yes'` as `TRUE` and `'No'` as `FALSE`. 
+If the column is `STRING`, use `'Yes'` and `'No'` as is.
+                            6. If the result is not tabular (e.g., a single string message or an error), skip the download logic and display only the response
+
+                            
+                            By following these guidelines, you can provide accurate, informative, and user-friendly responses.
+
             """
 
         try:
@@ -210,13 +289,59 @@ if prompt := st.chat_input("Ask me about information in the database..."):
                                 cleaned_query, job_config=job_config
                             )
                             api_response = query_job.result()
-                            api_response = str([dict(row) for row in api_response])
-                            api_response = api_response.replace("\\", "").replace(
-                                "\n", ""
-                            )
-                            api_requests_and_responses.append(
-                                [response.function_call.name, params, api_response]
-                            )
+                            # Convert the response into a list of rows
+                            rows = list(api_response)
+
+                            if rows:
+                                # Extract column information
+                                column_names = rows[0].keys() if isinstance(rows[0], bigquery.Row) else []
+                                num_columns = len(column_names)
+
+                                # Case 1: Non-tabular data (≤10 rows or very few columns)
+                                if len(rows) <= 10 or num_columns <= 1:
+                                    
+                                    api_response = str([dict(row) for row in rows])
+                                    api_response = api_response.replace("\\", "").replace("\n", "")
+                                    api_requests_and_responses.append([response.function_call.name, params, api_response])
+
+                                # Case 2: Tabular data (>10 rows and ≥2 columns)
+                                else:
+                                    # Convert rows into a DataFrame
+                                    result_data = pd.DataFrame([dict(row) for row in rows])
+
+                                    # Display the DataFrame in Streamlit
+                                    st.write("### Query Results", result_data)
+                                    
+                                    # Create a CSV file in memory for download
+                                    csv_buffer = io.StringIO()
+                                    result_data.to_csv(csv_buffer, index=False)
+                                    csv_data = csv_buffer.getvalue()
+
+                                    # Add a download button for the CSV file
+                                    st.download_button(
+                                        label="Download Results as CSV",
+                                        data=csv_data,
+                                        file_name="query_results.csv",
+                                        mime="text/csv"
+                                    )
+
+                                    # Generate key observations (e.g., insights from the data)
+                                    #st.write("### Observations:")
+                                    try:
+                                        api_response = str([dict(row) for row in rows])
+                                        api_response = api_response.replace("\\", "").replace("\n", "")
+                                        api_requests_and_responses.append([response.function_call.name, params, api_response])
+
+                                    except Exception as obs_error:
+                                        st.warning(f"Could not generate detailed observations. Error: {obs_error}")
+                                        
+                                    # Update api_response to keep data consistency
+                                    api_response = result_data.to_json(orient="records")
+                            else:
+                                # If no rows or columns, revert to original handling
+                                api_response = str([dict(row) for row in rows])
+                                api_response = api_response.replace("\\", "").replace("\n", "")
+                                api_requests_and_responses.append([response.function_call.name, params, api_response])
                         except Exception as e:
                             error_message = f"""
                             We're having trouble running this SQL query. This
