@@ -86,52 +86,28 @@ model = GenerativeModel(
 )
 
 st.set_page_config(
-<<<<<<< HEAD
-    page_title="Airline Booking Agent",
-    page_icon="airline.jpeg",
-=======
     page_title="AI Powered Data Query Interface",
-    page_icon="vertex-ai.png",
->>>>>>> ac23f87 (check-in)
+    page_icon="airline.jpeg",
     layout="wide",
 )
 
 col1, col2 = st.columns([8, 1])
 with col1:
-<<<<<<< HEAD
-    st.title("Airline Agent")
-with col2:
-    st.image("airline.jpeg")
-=======
     st.title("AI Powered Data Querying")
 with col2:
-    st.image("vertex-ai.png")
->>>>>>> ac23f87 (check-in)
+    st.image("airline.jpeg")
 
-# st.subheader("Powered by Function Calling in Gemini")
+st.subheader("Powered by Function Calling in Gemini")
 
-<<<<<<< HEAD
-# st.markdown(
-#     "[Source Code](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/function-calling/sql-talk-app/)   •   [Documentation](https://cloud.google.com/vertex-ai/docs/generative-ai/multimodal/function-calling)   •   [Codelab](https://codelabs.developers.google.com/codelabs/gemini-function-calling)   •   [Sample Notebook](https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/function-calling/intro_function_calling.ipynb)"
-# )
-=======
->>>>>>> ac23f87 (check-in)
 
 with st.expander("Sample prompts", expanded=True):
     st.write(
         """
         - What kind of information is in this database?
-<<<<<<< HEAD
-        - What percentage of orders are returned?
-        - How is airline bookings distributed across destinations?
-        - which customer made the highest number of reservations and how much money did he spent on it?
-        - can you show me 5 destinations has the least number of bookings with number of bookings 
-=======
         - How many bookings were made by customers in the 25-34 age group, grouped by state and airline?
         - Show the average ticket price for international flights grouped by airline.
         - How many customers booked more than 3 times in the last 3 months?
         - Compare ticket prices for business and economy classes.
->>>>>>> ac23f87 (check-in)
     """
     )
 
